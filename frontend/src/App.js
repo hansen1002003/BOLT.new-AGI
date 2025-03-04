@@ -1,19 +1,23 @@
 import { useState, useEffect } from "react";
+import React from "react";
+
 
 function App() {
-  const [message, setMessage] = useState("");
+  const [backendResponse, setBackendResponse] = useState("");
 
   useEffect(() => {
     fetch("http://127.0.0.1:5001/")
-      .then((response) => response.json())
-      .then((data) => setMessage(data.status))
-      .catch((error) => console.error("Error fetching data:", error));
+      .then((res) => res.json())
+      .then((data) => setBackendResponse(data.status))
+      .catch((error) => console.error("Error fetching backend:", error));
   }, []);
 
   return (
-    <div>
-      <h1>Frontend Connected to Backend</h1>
-      <p>Backend says: {message}</p>
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h1 style={{ color: "blue" }}>Frontend Connected to Backend</h1>
+      <p style={{ fontSize: "18px" }}>
+        <strong>Backend says:</strong> {backendResponse}
+      </p>
     </div>
   );
 }
