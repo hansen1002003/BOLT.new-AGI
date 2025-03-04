@@ -22,7 +22,6 @@ def status():
     """Check if the system is running."""
     return jsonify({"message": "AGI system is online and training..."})
 
-
 @app.route("/quantum", methods=["GET"])
 def run_quantum_simulation():
     """Simulates a quantum circuit using Amazon Braket."""
@@ -37,10 +36,7 @@ def run_quantum_simulation():
         task = device.run(circuit, shots=100)
         result = task.result()
 
-        # Convert numpy array to a Python list for JSON serialization
-        measurements = result.measurements.tolist()
-
-        return jsonify({"quantum_result": measurements})
+        return jsonify({"quantum_result": result.measurements})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -54,20 +50,12 @@ def user_message():
 
     user_text = data["text"]
 
-    # Ensure proper JSON loading
+    # Store conversation for training
     with open(CHAT_HISTORY_FILE, "r+") as f:
-        try:
-            history = json.load(f)
-            if not isinstance(history, list):  # Ensure history is a list
-                history = []
-        except json.JSONDecodeError:
-            history = []  # If JSON is corrupted, reset to empty list
-
+        history = json.load(f)
         history.append({"user": user_text})
-
         f.seek(0)
         json.dump(history, f, indent=4)
-        f.truncate()  # Ensure file is properly updated
 
     # Generate AI response
     ai_response = f"AI is learning: You said '{user_text}'"
